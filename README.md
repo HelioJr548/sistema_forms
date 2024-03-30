@@ -13,7 +13,7 @@
 
 ## Iniciando Banco de Dados
 
-Após configurar definições do banco em [src\config\database.js](src\config\database.js) :
+Após configurar definições do banco em [src/config/database.js](src/config/database.js) :
 
 ### Criação do banco:
 
