@@ -1,18 +1,22 @@
 'use strict';
+// const { v4: uuidv4 } = require('uuid');
+
+// const { UUIDV4 } = require('sequelize');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		await queryInterface.createTable('forms', {
-			formID: {
-				type: Sequelize.UUID,
+			id: {
+				type: Sequelize.INTEGER,
 				primaryKey: true,
-				defaultValue: Sequelize.UUIDV4,
 				allowNull: false,
+				autoIncrement: true,
 			},
 			title: {
 				type: Sequelize.TEXT,
 				allowNull: false,
+				unique: true,
 			},
 			description: {
 				type: Sequelize.TEXT,
