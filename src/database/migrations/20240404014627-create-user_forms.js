@@ -3,26 +3,26 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 	async up(queryInterface, Sequelize) {
-		await queryInterface.createTable('forms', {
+		await queryInterface.createTable('user_forms', {
 			id: {
 				type: Sequelize.INTEGER,
-				primaryKey: true,
 				allowNull: false,
 				autoIncrement: true,
+				primaryKey: true,
 			},
-			title: {
-				type: Sequelize.TEXT,
+			user_id: {
+				type: Sequelize.INTEGER,
 				allowNull: false,
-				unique: true,
+				references: { model: 'users', key: 'id' },
+				onDelete: 'CASCADE',
+				onUpdate: 'CASCADE',
 			},
-			description: {
-				type: Sequelize.TEXT,
-				allowNull: true,
-			},
-			active: {
-				type: Sequelize.BOOLEAN,
+			form_id: {
+				type: Sequelize.INTEGER,
 				allowNull: false,
-				defaultValue: true,
+				references: { model: 'forms', key: 'id' },
+				onDelete: 'CASCADE',
+				onUpdate: 'CASCADE',
 			},
 			created_at: {
 				type: Sequelize.DATE,
@@ -36,6 +36,6 @@ module.exports = {
 	},
 
 	async down(queryInterface, Sequelize) {
-		await queryInterface.dropTable('forms');
+		await queryInterface.dropTable('user_forms');
 	},
 };

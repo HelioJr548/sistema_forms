@@ -12,6 +12,10 @@ class Form extends Model {
 			}
 		);
 	}
+
+	static associate(models) {
+		this.belongsToMany(models.User, { through: 'user_forms' });
+	}
 }
 
 module.exports = Form;
