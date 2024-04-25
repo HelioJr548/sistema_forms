@@ -1,4 +1,6 @@
 require('dotenv').config();
+const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const express = require('express');
 const routes = require('./routes');
@@ -6,8 +8,11 @@ const routes = require('./routes');
 require('./database');
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'views/shared')));
+app.use(express.static(path.join(__dirname, 'views/admin')));
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(routes);
 
