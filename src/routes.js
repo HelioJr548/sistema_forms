@@ -1,19 +1,17 @@
 const express = require('express');
-const FormController = require('./controllers/FormController');
-const UserController = require('./controllers/UserController');
+const formsRouter = require('./routes/formsRouter');
+const usersRouter = require('./routes/usersRouter');
+const questionsRouter = require('./routes/questionsRouter');
+const associationsRouter = require('./routes/associationsRouter');
+const authRouter = require('./routes/authRouter');
 
-const routes = express.Router();
+const mainRouter = express.Router();
 
-routes.get('/', (req, res) => {
-	return res.json({ hello: 'World' });
-});
+mainRouter.use(formsRouter);
+mainRouter.use(usersRouter);
+mainRouter.use(questionsRouter);
+mainRouter.use(associationsRouter);
+mainRouter.use(associationsRouter);
+mainRouter.use(authRouter);
 
-routes.get('/forms', FormController.index);
-routes.post('/forms', FormController.store);
-
-routes.get('/users', UserController.index);
-routes.post('/users', UserController.store);
-
-routes.post('/forms/:title/users', FormController.storeUser);
-
-module.exports = routes;
+module.exports = mainRouter;
