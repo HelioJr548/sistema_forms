@@ -4,8 +4,8 @@ class Form extends Model {
 	static init(sequelize) {
 		super.init(
 			{
-				title: DataTypes.STRING,
-				description: DataTypes.STRING,
+				title: DataTypes.TEXT,
+				description: DataTypes.TEXT,
 			},
 			{
 				sequelize,
@@ -15,6 +15,7 @@ class Form extends Model {
 
 	static associate(models) {
 		this.belongsToMany(models.User, { through: 'user_forms' });
+		this.belongsToMany(models.Question, { through: 'form_questions' });
 	}
 }
 

@@ -1,13 +1,10 @@
 const { Model, DataTypes } = require('sequelize');
 
-class User extends Model {
+class Question extends Model {
 	static init(sequelize) {
 		super.init(
 			{
-				cpf: DataTypes.TEXT,
-				name: DataTypes.TEXT,
-				email: DataTypes.TEXT,
-				password: DataTypes.TEXT,
+				body: DataTypes.TEXT,
 				type: DataTypes.TEXT,
 			},
 			{
@@ -17,9 +14,10 @@ class User extends Model {
 	}
 
 	static associate(models) {
-		this.belongsToMany(models.Form, { through: 'user_forms' });
+		this.belongsToMany(models.Form, { through: 'form_questions' });
+		this.hasMany(models.Option);
 		this.hasMany(models.Answer);
 	}
 }
 
-module.exports = User;
+module.exports = Question;
