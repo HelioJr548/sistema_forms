@@ -9,7 +9,8 @@ require('./database');
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'views/shared')));
-app.use(express.static(path.join(__dirname, 'views/admin')));
+// app.use(express.static(path.join(__dirname, 'views/forms')));
+app.use(express.static(path.join(__dirname, 'views/home')));
 
 app.use(express.json());
 app.use(cookieParser());
