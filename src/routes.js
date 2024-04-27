@@ -11,7 +11,6 @@ mainRouter.use(formsRouter);
 mainRouter.use(usersRouter);
 mainRouter.use(questionsRouter);
 mainRouter.use(associationsRouter);
-mainRouter.use(associationsRouter);
 mainRouter.use(authRouter);
 
 module.exports = mainRouter;
