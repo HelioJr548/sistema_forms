@@ -1,7 +1,9 @@
 // formsRouter.js
 const express = require('express');
 const FormController = require('../controllers/FormController');
-const checkAuthentication = require('../controllers/Middlewares/authentication');
+const {
+    checkAuthentication,
+} = require('../controllers/Middlewares/authentication');
 
 const routes = express.Router();
 

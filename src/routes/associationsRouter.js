@@ -14,17 +14,15 @@ routes
 
 // Form-Question association routes
 routes
-    .route('/forms/:title/questions')
+    .route('/form/:title')
     .get(FormQuestionsController.index)
     .post(FormQuestionsController.linkQuestionToForm);
 
 // Qeustion-Options association routes
 routes
-    .route('/forms/:title/questions/options')
+    .route('/form/:title/questions/options')
     .get(QuestionOptionsController.index)
     .post(QuestionOptionsController.linkOptionToQuestion);
 
-routes
-    .route('/teste')
-    .get(QuestionOptionsController.getFormData);
+routes.route('/teste').get(QuestionOptionsController.getFormData);
 module.exports = routes;

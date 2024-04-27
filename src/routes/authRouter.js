@@ -1,27 +1,30 @@
-// questionsRouter.js
 const express = require('express');
+const path = require('path');
 
 const AuthController = require('../controllers/Auth/AuthController');
+const {
+	checkAuthentication,
+} = require('../controllers/Middlewares/authentication');
 
 const routes = express.Router();
 
-// Question routes
-routes
-	.route('/signup')
-	.get((req, res) => {
-		res.sendFile(`D:/repos/sistema_forms/src/views/shared/signup`);
-	})
-	.post(AuthController.register);
+routes.post('/signup', AuthController.register);
 
-routes
-	.route('/login')
-	.get((req, res) => {
-		res.sendFile(`D:/repos/sistema_forms/src/views/shared/login`);
-	})
+routes.get('/logout', AuthController.logout);
+
+// Usando path.join() para construir o caminho para a view
+routes.route('/login')
+	// .get((req, res) => {
+	// 	res.sendFile(path.join(__dirname, '..', 'views', 'shared', 'login'));
+	// })
 	.post(AuthController.login);
 
-routes.route('/home').get((req, res) => {
-	res.sendFile(`D:/repos/sistema_forms/src/views/admin/index.html`);
+routes.get('/admin', checkAuthentication, (req, res) => {
+	// Se chegou até aqui, o token é válido e o usuário está autorizado
+	res.json({
+		mensagem: 'Usuário autorizado para acessar esta rota',
+		usuario: req.usuario,
+	});
 });
 
 module.exports = routes;
