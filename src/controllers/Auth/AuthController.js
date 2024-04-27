@@ -1,9 +1,41 @@
-require('dotenv').config();
-const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const User = require('../../models/User');
 
 module.exports = {
+    async register(req, res) {
+        try {
+            const { name, cpf, email, password, type } = req.body;
+
+            if (!name || !cpf || !email || !password) {
+                return res
+                    .status(400)
+                    .json({ error: 'Todos os campos são obrigatórios' });
+            }
+
+            const userExists = await User.findOne({ where: { cpf, email } });
+            if (userExists) {
+                return res.status(400).json({ error: 'Usuário já existe' });
+            }
+
+            const salt = await bcrypt.genSalt(12);
+            const passwordHash = await bcrypt.hash(password, salt);
+
+            await User.create({
+                cpf,
+                name,
+                email,
+                password: passwordHash,
+                type,
+            });
+
+            return res.status(201).json({ msg: 'Usuário criado com sucesso!' });
+        } catch (error) {
+            console.error('Erro ao criar usuário:', error);
+            return res.status(500).json({ error: 'Erro interno do servidor' });
+        }
+    },
+
     async login(req, res) {
         try {
             const { cpf, password } = req.body;
@@ -19,6 +51,7 @@ module.exports = {
 
             // Verificar se o usuário existe
             if (!user || !(await bcrypt.compare(password, user.password))) {
+                res.status(200).json({ redirectTo: '/signup' });
                 return res
                     .status(401)
                     .json({ error: 'CPF ou senha incorretos' });
@@ -28,57 +61,32 @@ module.exports = {
             const token = jwt.sign(
                 { cpf: user.cpf, type: user.type },
                 process.env.JWT_SECRET,
-                {
-                    expiresIn: '1h',
-                }
+                { expiresIn: '1h' }
             );
 
-            res.cookie('token', token, { maxAge: 3600000, httpOnly: true }); // MaxAge em milissegundos (1 hora)
+            res.cookie('token', token, { maxAge: 3600000, httpOnly: true });
 
-            // Enviar token e criar sessão como resposta
-            res.json({ token });
-            console.log(token);
+            if (user.type === 'admin') {
+                res.status(200).json({ redirectTo: '/admin' });
+            } else {
+                res.status(200).json({ redirectTo: '/signup' });
+            }
         } catch (error) {
             console.error('Erro ao efetuar login:', error);
             return res.status(500).json({ error: 'Erro interno do servidor' });
         }
     },
 
-    async register(req, res) {
+    async logout(req, res) {
         try {
-            const { name, cpf, email, password, type } = req.body;
+            // Limpar o cookie que armazena o token JWT
+            res.clearCookie('token');
+            res.clearCookie('form');
 
-            // Verificar se todos os campos obrigatórios foram fornecidos
-            if (!name || !cpf || !email || !password) {
-                return res
-                    .status(400)
-                    .json({ error: 'Todos os campos são obrigatórios' });
-            }
-
-            // Verificar se o usuário já existe
-            const userExists = await User.findOne({ where: { cpf, email } });
-            if (userExists) {
-                return res.status(400).json({ error: 'Usuário já existe' });
-            }
-
-            // Gerar o hash da senha
-            const salt = await bcrypt.genSalt(12);
-            const passwordHash = await bcrypt.hash(password, salt);
-
-            // Criar o usuário dentro de uma transação
-            await User.create({
-                cpf,
-                name,
-                email,
-                password: passwordHash,
-                type,
-            });
-
-            // Retornar uma resposta de sucesso
-            res.status(201).json({ msg: 'Usuário criado com sucesso!' });
+            // Redirecionar o usuário para a página de login
+            res.redirect('/login'); // Substitua "/login" pelo caminho da sua página de login
         } catch (error) {
-            // Handle the error (e.g., log it or send an error response)
-            console.error('Erro ao criar usuário:', error);
+            console.error('Erro ao fazer logout:', error);
             return res.status(500).json({ error: 'Erro interno do servidor' });
         }
     },

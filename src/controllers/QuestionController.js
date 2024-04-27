@@ -1,41 +1,41 @@
 const Question = require('../models/Question');
 
 module.exports = {
-	async index(req, res) {
-		try {
-            const question = await Question.findAll();
-            return res.json(question);
+    async index(req, res) {
+        try {
+            const questions = await Question.findAll();
+            res.json(questions);
         } catch (error) {
-            console.error('Error fetching forms:', error);
+            // Handle the error (e.g., log it or send an error response)
+            console.error('Error fetching questions:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    },
+
+    async store(req, res) {
+        try {
+            const { body, type } = req.body;
+
+            // Verifica se a questão já existe no banco de dados
+            const [question, created] = await Question.findOrCreate({
+                where: { body, type },
+            });
+
+            // Se a questão já existir, retorna uma mensagem de aviso
+            if (!created) {
+                return res
+                    .status(400)
+                    .json({ alert: 'Question already exists in the database' });
+            }
+
+            // Se a questão for criada com sucesso, retorna a questão
+            return res
+                .status(201)
+                .json({ message: 'Question created successfully', question });
+        } catch (error) {
+            // Trata o erro
+            console.error('Error creating question:', error);
             return res.status(500).json({ error: 'Internal server error' });
         }
-	},
-
-	async store(req, res) {
-		try {
-			const { body, type } = req.body;
-
-			// Cria ou encontra a questão
-			const [question, created] = await Question.findCreateFind({
-				where: { body },
-				defaults: { body, type },
-			});
-
-			// Verifica se a questao foi encontrada
-			if (!created) {
-				const errorMessage = 'Question already exists.';
-				console.error(errorMessage);
-				return res.status(404).json({ error: errorMessage });
-			}
-
-			// Retorna a questão criada
-			return res.json(question);
-		} catch (error) {
-			// Captura e trata erros inesperados
-			const errorMessage =
-				'An error occurred while processing the request.';
-			console.error(errorMessage, error);
-			return res.status(500).json({ error: errorMessage });
-		}
-	},
+    },
 };
